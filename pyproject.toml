@@ -18,6 +18,10 @@ dependencies = [
 dev = [
     "pytest",
 ]
+# Track A optimizer extras (local embedder; pulls torch).
+optimize = [
+    "sentence-transformers>=3.0",
+]
 # Track B (cloud GPU only): unsloth + Qwen + LoRA SFT.
 # DO NOT install locally on a Mac -- requires CUDA. On the cloud box:
 #   uv sync --extra train

@@ -17,6 +17,10 @@ data/raw_index.jsonl
 # Optimized prompts — generated artifacts, not source
 prompts/prefix.txt
 prompts/suffix/
+prompts/_*
+
+# GEPA candidate logs
+logs/
 
 # Trained adapters (Track B)
 checkpoints/
