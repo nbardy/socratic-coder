@@ -4,7 +4,7 @@ import random
 
 import numpy as np
 
-from nick_mimic.metric import Score, score
+from user_mimic.metric import Score, score
 
 
 class FixedJudge:

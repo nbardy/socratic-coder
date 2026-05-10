@@ -5,7 +5,7 @@ import argparse
 import logging
 from pathlib import Path
 
-from nick_mimic.loader import (
+from user_mimic.loader import (
     _parse_since,
     build_samples,
     log_stats,
@@ -14,7 +14,7 @@ from nick_mimic.loader import (
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Build Nick-bot training dataset.")
+    parser = argparse.ArgumentParser(description="Build user-bot training dataset.")
     parser.add_argument("--since", default=None, help="YYYY-MM-DD; default = all time")
     parser.add_argument(
         "--out",

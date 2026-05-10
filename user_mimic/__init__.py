@@ -1,4 +1,4 @@
-from nick_mimic.canonical import (
+from user_mimic.canonical import (
     Sample,
     Thread,
     Turn,

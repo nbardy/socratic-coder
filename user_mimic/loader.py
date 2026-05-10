@@ -11,9 +11,9 @@ from pathlib import Path
 from typing import Iterable, Iterator
 
 HOME = Path.home()
-GIT_ROOT = Path(os.environ.get("NICK_MIMIC_GIT_ROOT", HOME / "git"))
+GIT_ROOT = Path(os.environ.get("USER_MIMIC_GIT_ROOT", HOME / "git"))
 
-from nick_mimic.canonical import (
+from user_mimic.canonical import (
     AssistantTurn,
     Sample,
     SystemTurn,
@@ -23,18 +23,18 @@ from nick_mimic.canonical import (
     Turn,
     UserTurn,
 )
-from nick_mimic.filters import (
+from user_mimic.filters import (
     DropCounts,
     classify_first_user_message,
-    is_human_nick,
+    is_user_message,
     is_oompa_cwd,
     is_oompa_project_slug,
     is_oompa_worktree,
 )
-from nick_mimic.harnesses import claude as claude_adapter
-from nick_mimic.harnesses import codex as codex_adapter
-from nick_mimic.harnesses import gemini as gemini_adapter
-from nick_mimic.redact import REDACTED, redact_secrets, render_tool_result_body
+from user_mimic.harnesses import claude as claude_adapter
+from user_mimic.harnesses import codex as codex_adapter
+from user_mimic.harnesses import gemini as gemini_adapter
+from user_mimic.redact import REDACTED, redact_secrets, render_tool_result_body
 
 log = logging.getLogger(__name__)
 
@@ -198,7 +198,7 @@ def samples_from_thread(thread: Thread, stats: LoaderStats) -> Iterator[Sample]:
     for i, t in enumerate(turns):
         if not isinstance(t, UserTurn):
             continue
-        if not is_human_nick(t, thread.cwd, stats.drops):
+        if not is_user_message(t, thread.cwd, stats.drops):
             continue
         target = redact_secrets(t.text).strip()
         if not target:

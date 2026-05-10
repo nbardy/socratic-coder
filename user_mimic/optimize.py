@@ -11,14 +11,14 @@ from typing import Any, Callable
 
 import dspy
 
-from nick_mimic.canonical import Sample
-from nick_mimic import template as tpl
-from nick_mimic import metric as metric_mod
+from user_mimic.canonical import Sample
+from user_mimic import template as tpl
+from user_mimic import metric as metric_mod
 
 log = logging.getLogger(__name__)
 
 SEED_PREFIX = (
-    "You are responding as Nick, steering an AI agent. "
+    "You are responding as the user, steering an AI agent. "
     "Be terse. Ask for notes, completion, subagent fanout. "
     "Be pushy when they stall."
 )
@@ -42,8 +42,8 @@ PRICE_TABLE: dict[str, tuple[float, float]] = {
 }
 
 
-class NickReply(dspy.Signature):
-    """Read the thread and reply as Nick would: terse, pattern-steering, pushy."""
+class UserReply(dspy.Signature):
+    """Read the thread and reply as the user would: terse, pattern-steering, pushy."""
 
     system: str = dspy.InputField()
     thread: str = dspy.InputField()
@@ -246,7 +246,7 @@ def optimize_prefix(
 
     metric_fn = _build_metric(by_key, judge, embedder, cost, clog)
 
-    program = dspy.Predict(NickReply)
+    program = dspy.Predict(UserReply)
     program.signature = program.signature.with_instructions(SEED_PREFIX)
 
     optimizer, name = _select_optimizer(metric_fn, max_rollouts)
@@ -312,7 +312,7 @@ def optimize_suffix(
 
     metric_fn = _build_metric(by_key, judge, embedder, cost, clog)
 
-    program = dspy.Predict(NickReply)
+    program = dspy.Predict(UserReply)
     program.signature = program.signature.with_instructions(seeded)
 
     optimizer, name = _select_optimizer(metric_fn, max_rollouts)

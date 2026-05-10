@@ -6,8 +6,8 @@ import logging
 import sys
 from pathlib import Path
 
-from nick_mimic.canonical import Sample
-from nick_mimic.optimize import optimize_prefix, optimize_suffix
+from user_mimic.canonical import Sample
+from user_mimic.optimize import optimize_prefix, optimize_suffix
 
 
 def _load_samples(path: Path) -> list[Sample]:

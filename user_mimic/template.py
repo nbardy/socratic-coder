@@ -6,7 +6,7 @@ from functools import lru_cache
 
 import tiktoken
 
-from nick_mimic.canonical import Sample
+from user_mimic.canonical import Sample
 
 
 TRUNC_MARKER = "…[truncated]…"
@@ -30,7 +30,7 @@ def _build_system_prompt(sample: Sample, prefix: str, suffix: str | None) -> str
     mid = f"\n\n{suffix}" if suffix is not None else ""
     tail = (
         f"\n\nThis is a log from model {sample.model} in harness {sample.harness}, "
-        f"cwd {sample.cwd}. Respond as Nick."
+        f"cwd {sample.cwd}. Respond as the user."
     )
     return f"{prefix}{mid}{tail}"
 

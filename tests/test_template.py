@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import random
 
-from nick_mimic.canonical import Sample
-from nick_mimic.template import JudgePrompt, render, render_for_judge
+from user_mimic.canonical import Sample
+from user_mimic.template import JudgePrompt, render, render_for_judge
 
 
 def _mk_sample(context: list[dict] | None = None, target: str = "finish the work") -> Sample:

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Label training samples with CAN_AUTO_RESPOND scores.
 
-Three zones by target (Nick-reply) length:
+Three zones by target (user-reply) length:
   short  (len <= LOW):          deterministic 100 -> 90 (linear)
   middle (LOW < len <= HIGH):   synthetic label via `claude -p`, range 50-90
   long   (len > HIGH):          deterministic 50 -> 0 (exponential decay)
@@ -91,7 +91,7 @@ human who understood the situation).
 Conversation (recent turns):
 {convo}
 
-Nick's actual reply:
+the user's actual reply:
 {reply}
 
 Generic bot replies look like: "keep going", "try 6 more things",

@@ -5,13 +5,13 @@ import re
 from pathlib import Path
 from typing import Any, cast
 
-from nick_mimic.canonical import Sample
-from nick_mimic import template as tpl
+from user_mimic.canonical import Sample
+from user_mimic import template as tpl
 
 MAX_CONTEXT_TOKENS = 8000
 
 _WW_RE = re.compile(r"\.(ww\d+-i\d+|ws[0-9a-f]+-w\d+-i\d+)$")
-_GIT_ROOT = f"{Path(os.environ.get('NICK_MIMIC_GIT_ROOT', Path.home() / 'git'))}/"
+_GIT_ROOT = f"{Path(os.environ.get('USER_MIMIC_GIT_ROOT', Path.home() / 'git'))}/"
 _UNKNOWN = "_unknown"
 
 

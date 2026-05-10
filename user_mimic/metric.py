@@ -9,8 +9,8 @@ from typing import Protocol
 
 import numpy as np
 
-from nick_mimic.canonical import Sample
-from nick_mimic.template import JudgePrompt, render_for_judge
+from user_mimic.canonical import Sample
+from user_mimic.template import JudgePrompt, render_for_judge
 
 
 class JudgeLM(Protocol):

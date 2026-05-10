@@ -5,9 +5,9 @@ import re
 from dataclasses import dataclass
 from pathlib import Path
 
-from nick_mimic.canonical import UserTurn
+from user_mimic.canonical import UserTurn
 
-_GIT_ROOT = Path(os.environ.get("NICK_MIMIC_GIT_ROOT", Path.home() / "git"))
+_GIT_ROOT = Path(os.environ.get("USER_MIMIC_GIT_ROOT", Path.home() / "git"))
 
 # Canonical hide-tag regexes from ~/git/unleashd/server/src/adapters/jsonl.ts
 # (HIDE_TEST_RE, AI_WRITING_TOOL_RE, OOMPA_RE). Applied to the FIRST user
@@ -102,7 +102,7 @@ def is_hook_injected(text: str) -> bool:
     return any(s.startswith(p) for p in HOOK_INJECTED_PREFIXES)
 
 
-def is_human_nick(turn: UserTurn, cwd: str, counts: DropCounts) -> bool:
+def is_user_message(turn: UserTurn, cwd: str, counts: DropCounts) -> bool:
     if turn.is_sidechain:
         counts.sidechain += 1
         return False

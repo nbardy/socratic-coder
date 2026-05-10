@@ -4,7 +4,7 @@ from __future__ import annotations
 import argparse
 import logging
 
-from nick_mimic.loader import _parse_since, build_samples
+from user_mimic.loader import _parse_since, build_samples
 
 
 def _pct(n: int, total: int) -> str:
@@ -16,7 +16,7 @@ def _row(label: str, n: int, total: int) -> str:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Print nick_mimic corpus metrics.")
+    parser = argparse.ArgumentParser(description="Print user_mimic corpus metrics.")
     parser.add_argument("--since", default=None, help="YYYY-MM-DD; default = all time")
     args = parser.parse_args()
     logging.basicConfig(level=logging.WARNING)
@@ -29,7 +29,7 @@ def main() -> None:
     samples_total = stats.samples_emitted + d.too_short + d.too_long_target + d.hook_injected
     hidden_threads = d.hide_test_thread + d.ai_writing_thread + d.oompa_tag_thread
 
-    print(f"\n=== nick_mimic corpus metrics (since={args.since or 'all time'}) ===\n")
+    print(f"\n=== user_mimic corpus metrics (since={args.since or 'all time'}) ===\n")
     print(f"Total conversations seen:        {threads_total:>8,}")
     print(f"Total conversations kept:        {stats.threads_kept:>8,}  ({_pct(stats.threads_kept, threads_total)})")
     print(f"Total response data points:      {stats.samples_emitted:>8,}")

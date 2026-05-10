@@ -4,7 +4,7 @@ import logging
 from pathlib import Path
 from typing import Iterator
 
-from nick_mimic.canonical import Thread
+from user_mimic.canonical import Thread
 
 log = logging.getLogger(__name__)
 

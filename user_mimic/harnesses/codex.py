@@ -5,7 +5,7 @@ import logging
 from pathlib import Path
 from typing import Any, Iterator
 
-from nick_mimic.canonical import (
+from user_mimic.canonical import (
     AssistantTurn,
     SystemTurn,
     Thread,

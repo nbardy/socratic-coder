@@ -5,8 +5,8 @@ import json
 import logging
 from pathlib import Path
 
-from nick_mimic.canonical import Sample
-from nick_mimic.infer import load_prompts, reply, slug_from_cwd
+from user_mimic.canonical import Sample
+from user_mimic.infer import load_prompts, reply, slug_from_cwd
 
 
 def _load_samples(path: Path, n: int) -> list[Sample]:
