@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# venv (we use uv)
+.venv/
+
+# Materialized samples — too big for git, regenerate from local harness data
+data/samples/
+data/raw_index.jsonl
+
+# Optimized prompts — generated artifacts, not source
+prompts/prefix.txt
+prompts/suffix/
+
+# Trained adapters (Track B)
+checkpoints/
+*.safetensors
+*.bin
+*.pt
+*.gguf
+
+# Local env / secrets
+.env
+.env.*
+!.env.example
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.idea/
+.vscode/
+*.swp
