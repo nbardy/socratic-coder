@@ -179,6 +179,7 @@ def _make_gepa(
     metric_fn: Callable[..., float],
     reflection_lm: Any,
     max_metric_calls: int | None,
+    num_threads: int | None,
 ) -> tuple[Any, str]:
     gepa_cls = getattr(dspy, "GEPA", None)
     if gepa_cls is None:
@@ -186,14 +187,12 @@ def _make_gepa(
         if mipro_cls is None:
             raise RuntimeError("Neither dspy.GEPA nor dspy.MIPROv2 available")
         log.warning("dspy.GEPA not available; falling back to MIPROv2 (no reflection_lm)")
-        return mipro_cls(metric=metric_fn, auto="light"), "MIPROv2"
+        return mipro_cls(metric=metric_fn, auto="light", num_threads=num_threads), "MIPROv2"
 
+    common = {"metric": metric_fn, "reflection_lm": reflection_lm, "num_threads": num_threads}
     if max_metric_calls is None:
-        return gepa_cls(metric=metric_fn, auto="light", reflection_lm=reflection_lm), "GEPA"
-    return (
-        gepa_cls(metric=metric_fn, max_metric_calls=max_metric_calls, reflection_lm=reflection_lm),
-        "GEPA",
-    )
+        return gepa_cls(auto="light", **common), "GEPA"
+    return gepa_cls(max_metric_calls=max_metric_calls, **common), "GEPA"
 
 
 def _build_lm(spec: BackendSpec, role: str) -> Any:
@@ -301,6 +300,7 @@ def optimize_prefix(
     embedder: str = "local",
     max_cost_usd: float = math.inf,
     max_metric_calls: int | None = None,
+    num_threads: int | None = None,
     out_path: str = "prompts/prefix.txt",
 ) -> str:
     if not train_samples:
@@ -328,7 +328,7 @@ def optimize_prefix(
     program = dspy.Predict(UserReply)
     program.signature = program.signature.with_instructions(SEED_PREFIX)
 
-    optimizer, name = _make_gepa(metric_fn, bks.reflection_lm, max_metric_calls)
+    optimizer, name = _make_gepa(metric_fn, bks.reflection_lm, max_metric_calls, num_threads)
     log.info("prefix optimize: using %s, %d train, %d val", name, len(train_ex), len(val_ex))
 
     try:
@@ -392,7 +392,7 @@ def optimize_suffix(
     program = dspy.Predict(UserReply)
     program.signature = program.signature.with_instructions(seeded)
 
-    optimizer, name = _make_gepa(metric_fn, bks.reflection_lm, max_metric_calls)
+    optimizer, name = _make_gepa(metric_fn, bks.reflection_lm, max_metric_calls, num_threads)
     log.info("suffix[%s] optimize: using %s, %d train, %d val", project, name, len(train_ex), len(val_ex))
 
     try:

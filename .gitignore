@@ -14,10 +14,9 @@ __pycache__/
 data/samples/
 data/raw_index.jsonl
 
-# Optimized prompts — generated artifacts, not source
-prompts/prefix.txt
-prompts/suffix/
+# Optimized prompts: smoke artifacts gitignored, real prefix.txt committed.
 prompts/_*
+prompts/suffix/
 
 # GEPA candidate logs
 logs/

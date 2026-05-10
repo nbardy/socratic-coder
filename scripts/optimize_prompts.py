@@ -75,6 +75,7 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--embedder", choices=["local", "openai"], default="local")
     p.add_argument("--max-cost-usd", type=float, default=None, help="api mode only; CLI mode is subscription-billed")
     p.add_argument("--max-metric-calls", type=int, default=None, help="hard cap on GEPA metric calls (None → auto='light')")
+    p.add_argument("--num-threads", type=int, default=None, help="parallel metric calls (None → DSPy default; CLI subprocess works well at 4-8)")
     p.add_argument("--prefix-path", default="prompts/prefix.txt")
     p.add_argument("--suffix-dir", default="prompts/suffix")
     args = p.parse_args(argv)
@@ -87,6 +88,7 @@ def main(argv: list[str] | None = None) -> int:
         "backend": backend,
         "embedder": args.embedder,
         "max_metric_calls": args.max_metric_calls,
+        "num_threads": args.num_threads,
     }
     if args.max_cost_usd is not None:
         common["max_cost_usd"] = args.max_cost_usd
