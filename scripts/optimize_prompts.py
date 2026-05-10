@@ -41,15 +41,29 @@ def _load_samples(path: Path, limit: int | None = None) -> list[Sample]:
     return out
 
 
+_DEFAULT_CLI_MODELS = {
+    # claude -p needs an alias; codex's binary default works without --model.
+    "claude": {"student": "haiku", "reflection": "sonnet", "judge": "haiku"},
+    "codex": {"student": "", "reflection": "", "judge": ""},
+}
+
+
+def _resolve_cli_models(args: argparse.Namespace) -> tuple[str, str, str]:
+    defaults = _DEFAULT_CLI_MODELS[args.cli_tool]
+    return (
+        defaults["student"] if args.student_model is None else args.student_model,
+        defaults["reflection"] if args.reflection_model is None else args.reflection_model,
+        defaults["judge"] if args.judge_model is None else args.judge_model,
+    )
+
+
 def _build_backend(args: argparse.Namespace) -> BackendSpec:
     if args.lm_backend == "cli":
-        return CLISpec(
-            tool=args.cli_tool,
-            student_model=args.student_model,
-            reflection_model=args.reflection_model,
-            judge_model=args.judge_model,
-        )
+        s, r, j = _resolve_cli_models(args)
+        return CLISpec(tool=args.cli_tool, student_model=s, reflection_model=r, judge_model=j)
     if args.lm_backend == "api":
+        if args.student_model is None or args.reflection_model is None or args.judge_model is None:
+            raise ValueError("--lm-backend api requires --student-model / --reflection-model / --judge-model")
         return APISpec(
             student_lm=args.student_model,
             reflection_lm=args.reflection_model,
@@ -69,9 +83,9 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--val-limit", type=int, default=None, help="cap loaded val samples (smoke test)")
     p.add_argument("--lm-backend", choices=["cli", "api"], default="cli")
     p.add_argument("--cli-tool", choices=["claude", "codex"], default="claude")
-    p.add_argument("--student-model", default="haiku", help="cli: 'haiku'/'sonnet'; api: 'openai/gpt-4.1-mini' etc.")
-    p.add_argument("--reflection-model", default="sonnet")
-    p.add_argument("--judge-model", default="haiku")
+    p.add_argument("--student-model", default=None, help="cli claude: 'haiku'/'sonnet' (default haiku); cli codex: leave unset; api: e.g. 'openai/gpt-4.1-mini'")
+    p.add_argument("--reflection-model", default=None, help="(see --student-model)")
+    p.add_argument("--judge-model", default=None, help="(see --student-model)")
     p.add_argument("--embedder", choices=["local", "openai"], default="local")
     p.add_argument("--max-cost-usd", type=float, default=None, help="api mode only; CLI mode is subscription-billed")
     p.add_argument("--max-metric-calls", type=int, default=None, help="hard cap on GEPA metric calls (None → auto='light')")

@@ -12,19 +12,37 @@ The name is the thesis: a good agent operator mostly asks pointed questions. Soc
    - **Prompt optimization** (primary) — DSPy + GEPA evolves a system prompt over a cloud model.
    - **SFT** (fallback) — Qwen MoE LoRA fine-tune on a cloud GPU.
 
-## Run
+## Generate your own prompt
+
+Three commands. No API keys — uses your existing Codex (or Claude Code) subscription via the CLI.
 
 ```bash
-uv venv && uv sync
+uv venv && uv sync --extra optimize
 
-# 1. Import + build samples
+# 1. Build samples from your local agent-session history
 uv run python -m user_mimic.loader --out data/samples/
 
-# 2a. Prompt optimization
-uv run python -m user_mimic.optimize --stage prefix
-uv run python -m user_mimic.optimize --stage suffix --project <slug>
+# 2. Optimize a prompt for your steering style (~12 min wall, $0)
+uv run python scripts/optimize_prompts.py --stage prefix \
+  --lm-backend cli --cli-tool codex \
+  --num-threads 4 \
+  --train-limit 300 --val-limit 80 --max-metric-calls 120
+```
 
-# 2b. SFT (cloud GPU required)
+Output lands at [`prompts/prefix.txt`](prompts/prefix.txt) — drop it in front of any model at inference time.
+
+→ **[See an example prefix](prompts/prefix.txt)** evolved on Nick's `nbardy` corpus (4.4KB, valset score 0.42 → 0.44, captured patterns like "subagent fanout for parallel work", "demand verification not just edits", "strip large files from history over Git LFS").
+
+### Other knobs
+
+```bash
+# Use Claude Code instead of Codex
+... --cli-tool claude  # defaults to haiku for student/judge, sonnet for reflection
+
+# Per-project tailoring (run after prefix is good)
+uv run python scripts/optimize_prompts.py --stage suffix --project <slug>
+
+# SFT path (cloud GPU required, see Track B internals below)
 uv sync --extra train
 uv run python -m user_mimic.train --data data/samples/train.jsonl
 ```
@@ -61,16 +79,18 @@ Labels keyed by `{thread_id}:{sha1(target)[:12]}` in `data/samples/labels.jsonl`
 <details>
 <summary><b>Track A — prompt optimization</b></summary>
 
-- **Metric** — weighted combo of LLM-as-judge (pairwise), embedding cosine, length sanity.
+- **Metric** — weighted combo (0.6/0.3/0.1) of LLM-as-judge (pairwise A/B), embedding cosine, length sanity.
 - **Optimizer** — DSPy `GEPA` (reflective prompt mutation).
-- **Two-stage**: optimize `PREFIX` on the full corpus, then freeze it and optimize per-project `SUFFIX` for projects with ≥N messages.
-- **Budget** — start on Haiku/Sonnet; Opus only for final rounds.
+- **Two-stage**: optimize `PREFIX` on the full corpus, then freeze it and optimize per-project `SUFFIX` for projects with ≥30 messages.
+- **LM backends**: `--lm-backend cli` shells out to `claude -p` or `codex exec` (subscription auth, no API key); `--lm-backend api` uses `dspy.LM` (needs OpenAI/Anthropic key).
+- **Embedder**: `--embedder local` uses `sentence-transformers/all-MiniLM-L6-v2` on CPU (free); `--embedder openai` uses `text-embedding-3-small` (needs key).
+- **Parallelism**: `--num-threads 4` ≈ 2× speedup; 8+ risks subscription rate limits.
 </details>
 
 <details>
 <summary><b>Track B — SFT</b></summary>
 
-Unsloth LoRA on Qwen3-30B-A3B (or smaller), long-context, cloud CUDA. Loss masking: everything except the user's message is `label=-100`.
+Unsloth LoRA on Qwen2.5-7B-Instruct (4-bit, 16k seq) or larger Qwen3-30B-A3B, cloud CUDA only. Loss masking: everything except the user's message is `label=-100`. ~$12/epoch on a runpod A100-80G.
 </details>
 
 <details>
